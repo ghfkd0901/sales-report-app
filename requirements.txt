@@ -1,0 +1,7 @@
+streamlit
+pandas
+numpy
+google-auth
+google-api-python-client
+gspread
+python-dateutil
