@@ -91,7 +91,7 @@ def load_csv_from_drive(folder_id, prefix, target_date: date):
     except: return pd.DataFrame()
 
 # ───────────────────────────────
-# 📊 데이터 집계 로직 (CES_죽곡 제외 논리 포함)
+# 📊 데이터 집계 로직 (공급전만 CES_죽곡 제외)
 # ───────────────────────────────
 def get_agg_series(df, mode="net"):
     if df.empty: return pd.Series(0, index=USAGE_COLS)
@@ -115,9 +115,8 @@ def get_agg_series(df, mode="net"):
         df['val'] = to_numeric(df['폐전']) if '폐전' in df.columns else pd.Series(0, index=df.index)
     elif mode == "facility":
         df['val'] = to_numeric(df['계약전']) if '계약전' in df.columns else pd.Series(0, index=df.index)
-        if '업종' in df.columns:
-            df.loc[df['업종'].astype(str).str.strip() == "CES_죽곡", 'val'] = 0
-    else: # mode == "supply"
+        # 시설전은 CES_죽곡 제외 안 함 (전체 포함)
+    else:  # mode == "supply"
         df['val'] = to_numeric(df['건수']) if '건수' in df.columns else pd.Series(0, index=df.index)
         if '업종' in df.columns:
             df.loc[df['업종'].astype(str).str.strip() == "CES_죽곡", 'val'] = 0
@@ -247,9 +246,8 @@ with st.spinner('데이터를 불러오는 중...'):
         ]
         return pd.DataFrame(recs).set_index(["구분", "세부"])
 
-    # ✅ 실적 계산 수정: 열병합용 포함하도록 USAGE_COLS 기준으로 처리
+    # ✅ 실적 계산: 열병합용 포함하도록 USAGE_COLS 기준으로 처리
     if not p_use.empty:
-        # p_use에서 "합계" 행의 USAGE_COLS만 추출 (소계, 총합계 제외)
         use_change_sum = p_use.loc["합계"][USAGE_COLS]
     else:
         use_change_sum = pd.Series(0, index=USAGE_COLS)
