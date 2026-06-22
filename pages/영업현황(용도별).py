@@ -221,6 +221,19 @@ date_b = date(date_b.year, date_b.month, calendar.monthrange(date_b.year, date_b
 st.sidebar.markdown("---")
 st.sidebar.write(f"**기준 연월:** `{date_a.strftime('%Y-%m')}`")
 
+# ───────────────────────────────
+# 📋 작성 논리 안내 (화면 안내용 - 별도 .md 파일에서 불러옴)
+# ───────────────────────────────
+import os
+EXPLANATION_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "작성방법", "영업현황(용도별)_작성방법.md")
+
+with st.expander("📋 이 표는 이렇게 만들어집니다", expanded=False):
+    try:
+        with open(EXPLANATION_PATH, "r", encoding="utf-8") as f:
+            st.markdown(f.read())
+    except FileNotFoundError:
+        st.warning(f"⚠️ 설명 파일을 찾을 수 없습니다: {EXPLANATION_PATH}")
+
 with st.spinner('데이터를 불러오는 중...'):
     df_c_a, df_c_b = load_csv_from_drive(FOLDER_IDS["계약전"], "계약전", date_a), load_csv_from_drive(FOLDER_IDS["계약전"], "계약전", date_b)
     df_f_a, df_f_b = load_csv_from_drive(FOLDER_IDS["시설전"], "시설전", date_a), load_csv_from_drive(FOLDER_IDS["시설전"], "시설전", date_b)
